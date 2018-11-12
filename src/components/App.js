@@ -3,44 +3,30 @@ import { connect } from 'react-redux';
 import Card from './Card';
 import Genres from './Genres';
 import { getMovies } from '../thunks';
-import { setMovies } from '../actions';
+import { addHearted, removeHearted} from "../actions";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      hearted: [],
-    };
-
     props.onGetMovies();
   }
 
-  setMovieList = (movieList) => {
-    this.setState({
-      movieList,
-    })
-  };
-
   addHeart = (id) => {
-    const { hearted } = this.state;
+    const { onHearted } = this.props;
 
-    this.setState({
-      hearted: [ ...hearted, id ],
-    })
+    onHearted(id);
   };
 
   removeHeart = (id) => {
-    const { hearted } = this.state;
+    const { onRemoveHearted } = this.props;
 
-    this.setState({
-      hearted: hearted.filter((currentId) => currentId !== id),
-    })
+    onRemoveHearted(id);
   };
 
   render() {
     const { movieList } = this.props;
-    const { hearted } = this.state;
+    const { hearted } = this.props;
 
     return (
       <React.Fragment>
@@ -66,15 +52,16 @@ export default connect(
   // function to get data from redux store to this components props
   (state) => {
     return {
-      movieList: state.movies.list,
+      movieList: state.movies,
+      hearted: state.hearted
     };
   },
   // function to pass action callers to this components props
   (dispatch) => {
     return {
-      // onSetMovies - simplest way to pass data to store
-      onSetMovies: (movies) => dispatch(setMovies(movies)),
       onGetMovies: () => dispatch(getMovies()),
+      onHearted: (id) => dispatch(addHearted(id)),
+      onRemoveHearted: (id) => dispatch(removeHearted(id)),
     };
   },
 )(App);

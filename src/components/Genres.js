@@ -1,48 +1,27 @@
 import React from 'react';
-import axios from 'axios';
-import Card from './Card';
-import { endpoints } from '../../config';
+import { connect } from 'react-redux';
+import {addLogEntry, getGenres, getMovies} from '../thunks';
 
-export default class Genres extends React.Component {
-  constructor() {
-    super();
+class Genres extends React.Component {
+  constructor(props) {
+    super(props);
 
-    this.state = {
-      genres: [],
-    };
-
-    this.requestGenres();
+    props.onGetGenres();
   }
 
-  requestGenres = () => {
-    axios
-      .get(endpoints.genres())
-      .then((res) => this.setGenreList(res.data.genres))
-      .catch((error) => console.log(error));
-  };
-
-  requestGenresMovies = (id) => {
-    const { onChangeList } = this.props;
-
-    axios
-      .get(endpoints.genreMovies(id))
-      .then((res) => onChangeList(res.data.results))
-      .catch((error) => console.log(error));
-  };
-
-  setGenreList = (genres) => {
-    this.setState({
-      genres,
-    })
+  changeGenre = (genre) => {
+      const {onGetMovies, onLogEntry} = this.props;
+      onLogEntry(`Pakeistas zanras i ${genre.name}`);
+      onGetMovies(genre.id);
   };
 
   render() {
-    const { genres } = this.state;
+    const { genres, onGetMovies } = this.props;
 
     return (
       <div className="genres">
         {genres.map((genre) => (
-          <div key={genre.id} className="genre" onClick={() => this.requestGenresMovies(genre.id)}>
+          <div key={genre.id} className="genre" onClick={() => this.changeGenre(genre)}>
             {genre.name}
           </div>
         ))}
@@ -50,3 +29,19 @@ export default class Genres extends React.Component {
     );
   }
 }
+
+export default connect(
+    (state) => {
+      return {
+        genres: state.genres,
+      };
+    },
+    (dispatch) => {
+      return {
+        onGetGenres: () => dispatch(getGenres()),
+        onGetMovies: (id) => dispatch(getMovies(id)),
+        onLogEntry: (text) => dispatch(addLogEntry(text))
+      }
+    }
+
+)(Genres);
