@@ -24,7 +24,6 @@ const getMovies = (id = null) => (dispatch) => {
 
 const addLogEntry = (text) => (dispatch) => {
     const dateTime = getDatetime();
-    console.log(dateTime);
     dispatch(addLog(dateTime, text));
 }
 

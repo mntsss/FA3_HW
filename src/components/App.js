@@ -2,26 +2,27 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Card from './Card';
 import Genres from './Genres';
-import { getMovies } from '../thunks';
+import { getMovies, addLogEntry } from '../thunks';
 import { addHearted, removeHearted} from "../actions";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
+    props.onLogEntry(`Aplikacija uzkrauta`);
     props.onGetMovies();
   }
 
-  addHeart = (id) => {
-    const { onHearted } = this.props;
-
-    onHearted(id);
+  addHeart = (movie) => {
+    const { onHearted, onLogEntry } = this.props;
+    onLogEntry(`Uzdeta sirdele filmui ${movie.title}`);
+    onHearted(movie.id);
   };
 
-  removeHeart = (id) => {
-    const { onRemoveHearted } = this.props;
-
-    onRemoveHearted(id);
+  removeHeart = (movie) => {
+    const { onRemoveHearted, onLogEntry } = this.props;
+    onLogEntry(`Nuimta sirdele filmui ${movie.title}`);
+    onRemoveHearted(movie.id);
   };
 
   render() {
@@ -37,8 +38,8 @@ class App extends React.Component {
             <Card
               key={movie.id}
               isHearted={hearted.includes(movie.id)}
-              onAddHeart={() => this.addHeart(movie.id)}
-              onRemoveHeart={() => this.removeHeart(movie.id)}
+              onAddHeart={() => this.addHeart(movie)}
+              onRemoveHeart={() => this.removeHeart(movie)}
               movie={movie}
             />
           ))}
@@ -62,6 +63,7 @@ export default connect(
       onGetMovies: () => dispatch(getMovies()),
       onHearted: (id) => dispatch(addHearted(id)),
       onRemoveHearted: (id) => dispatch(removeHearted(id)),
+      onLogEntry: (text) => dispatch(addLogEntry(text)),
     };
   },
 )(App);

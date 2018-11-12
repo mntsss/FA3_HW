@@ -30,8 +30,7 @@ const removeHearted = (id) => {
 const addLog = (time,entry) => {
   return {
     type: 'ADD_LOG',
-      time,
-      entry
+    time, entry
   };
 };
 
