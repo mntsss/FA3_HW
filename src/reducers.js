@@ -39,7 +39,7 @@ const heartedReducer = (state = initialState, action) => {
 const logsReducer = (state = initialState, action) => {
   switch (action.type) {
       case 'ADD_LOG':
-        return state.concat({[action.time]: action.entry});
+          return {...state, [action.time]:action.entry};
       default:
         return state;
   }
